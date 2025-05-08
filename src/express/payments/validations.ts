@@ -14,12 +14,6 @@ const paymentFields = z
     })
     .required();
 
-export const getAllRequestSchema = z.object({
-    body: z.object({}),
-    query: z.object({}),
-    params: z.object({}),
-});
-
 export const createOneRequestSchema = z.object({
     body: paymentFields,
     query: z.object({}),

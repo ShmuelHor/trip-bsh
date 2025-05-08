@@ -4,10 +4,6 @@ import { Trip, TripDocument } from './interface';
 import { TripsModel } from './model';
 
 export class TripsManager {
-    static getAll = async (): Promise<TripDocument[]> => {
-        return await TripsModel.find().lean().exec();
-    };
-
     static createOne = async (trip: Trip): Promise<TripDocument> => {
         return TripsModel.create(trip);
     };
