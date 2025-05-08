@@ -3,10 +3,6 @@ import { Payments, PaymentsDocument } from './interface';
 import { PaymentsModel } from './model';
 
 export class PaymentsManager {
-    static getAll = async (): Promise<PaymentsDocument[]> => {
-        return await PaymentsModel.find().lean().exec();
-    };
-
     static createOne = async (payment: Payments): Promise<PaymentsDocument> => {
         return PaymentsModel.create(payment);
     };

@@ -17,12 +17,6 @@ export const tripSchema = z
         path: ['endDate'],
     });
 
-export const getAllRequestSchema = z.object({
-    body: z.object({}),
-    query: z.object({}),
-    params: z.object({}),
-});
-
 export const createOneRequestSchema = z.object({
     body: tripSchema,
     query: z.object({}),

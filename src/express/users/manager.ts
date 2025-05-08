@@ -3,10 +3,6 @@ import { User, UserDocument } from './interface';
 import { UsersModel } from './model';
 
 export class UsersManager {
-    static getAll = async (): Promise<UserDocument[]> => {
-        return await UsersModel.find().lean().exec();
-    };
-
     static createOne = async (user: User): Promise<UserDocument> => {
         return UsersModel.create(user);
     };

@@ -1,13 +1,9 @@
 import { Response } from 'express';
 import { TypedRequest } from '../../utils/zod';
 import { PaymentsManager } from './manager';
-import { createOneRequestSchema, getAllPaymentsByTripIdRequestSchema, getAllRequestSchema } from './validations';
+import { createOneRequestSchema, getAllPaymentsByTripIdRequestSchema } from './validations';
 
 export class PaymentsController {
-    static getALL = async (_req: TypedRequest<typeof getAllRequestSchema>, res: Response) => {
-        res.json(await PaymentsManager.getAll());
-    };
-
     static createOne = async (req: TypedRequest<typeof createOneRequestSchema>, res: Response) => {
         res.json(await PaymentsManager.createOne(req.body));
     };

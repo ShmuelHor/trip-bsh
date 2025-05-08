@@ -9,18 +9,6 @@ const userFields = z.object({
     phonenumber: z.string().min(10, { message: 'Phone number too short' }).max(15, { message: 'Phone number too long' }),
 });
 
-export const getAllRequestSchema = z.object({
-    body: z.object({}),
-    query: z.object({}),
-    params: z.object({}),
-});
-
-export const createOneRequestSchema = z.object({
-    body: userFields,
-    query: z.object({}),
-    params: z.object({}),
-});
-
 export const getByIdRequestSchema = z.object({
     body: z.object({}),
     query: z.object({}),
