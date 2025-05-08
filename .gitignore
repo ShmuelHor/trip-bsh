@@ -1,0 +1,24 @@
+# תלותים
+node_modules/
+
+# קבצי סביבה
+.env
+
+# לוגים
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# קבצי מערכת
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# קבצי swap
+*.swp
+
+# TypeScript build info (אם תשתמש ב-tsc --build)
+*.tsbuildinfo
