@@ -6,4 +6,4 @@ export const tripsRouter = Router();
 
 tripsRouter.post('/', validateRequest(createOneRequestSchema), wrapController(TripsController.createOne));
 
-tripsRouter.get('/ofUser/:id', validateRequest(getAllTripsByUserIdRequestSchema), wrapController(TripsController.getAllTripsByUserId));
+tripsRouter.get('/ofUser', validateRequest(getAllTripsByUserIdRequestSchema), wrapController(TripsController.getAllTripsByUserId));

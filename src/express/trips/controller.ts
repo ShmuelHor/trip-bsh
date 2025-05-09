@@ -9,7 +9,6 @@ export class TripsController {
     };
 
     static getAllTripsByUserId = async (req: TypedRequest<typeof getAllTripsByUserIdRequestSchema>, res: Response) => {
-        const { id } = req.params;
-        res.json(await TripsManager.getAllTripsByUserId(id));
+        res.json(await TripsManager.getAllTripsByUserId(req.user._id.toString()));
     };
 }
