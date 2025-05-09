@@ -26,9 +26,7 @@ export const createOneRequestSchema = z.object({
 export const getAllTripsByUserIdRequestSchema = z.object({
     body: z.object({}),
     query: z.object({}),
-    params: z.object({
-        id: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: 'Invalid userId' }),
-    }),
+    params: z.object({}),
 });
 
 export const getByIdRequestSchema = z.object({
