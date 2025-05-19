@@ -1,14 +1,16 @@
-export interface Payments {
-    tripId: string;
-    amount: number;
-    currency: string;
-    payerId?: string;
-    forUserIds: string[];
-    description: string;
-    paymentDate: Date;
+export interface Payment {
+  tripId: string;
+  amount: number;
+  currency: string;
+  amountInILS?: number;
+  payerId?: string;
+  beneficiaryUserIds: string[];
+  description: string;
+  paymentDate: Date;
 }
 
-export interface PaymentsDocument extends Payments {
+
+export interface PaymentsDocument extends Payment {
     _id: string;
     createdAt: Date;
     updatedAt: Date;

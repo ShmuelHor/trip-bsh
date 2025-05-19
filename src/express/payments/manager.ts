@@ -1,43 +1,53 @@
+import { convertCurrencyToILS } from '../../utils/currency-converter';
 import { TripsManager } from '../trips/manager';
-import { Payments, PaymentsDocument } from './interface';
+import { Payment, PaymentsDocument } from './interface';
 import { PaymentsModel } from './model';
 
 export class PaymentsManager {
-    static createOne = async (paymentInput: Payments, loggedInUserId: string): Promise<PaymentsDocument> => {
-        const tripData = await TripsManager.getById(paymentInput.tripId);
-        const { amount: totalAmount, forUserIds: beneficiaries } = paymentInput;
+    static createOne = async (paymentInput: Payment, loggedInUserId: string): Promise<PaymentsDocument> => {
+        const trip = await TripsManager.getById(paymentInput.tripId);
 
-        const individualShare = totalAmount / beneficiaries.length;
+        const { amount: originalAmount, currency, beneficiaryUserIds } = paymentInput;
+        const amountInILS = await convertCurrencyToILS(originalAmount, currency);
+        const sharePerUser = amountInILS / beneficiaryUserIds.length;
 
-        tripData.participants = tripData.participants.map((participant) => {
-            const { userId, balance: currentBalance } = participant;
+        const roundToTwoDecimals = (value: number): number =>
+            Math.round(value * 100) / 100;
+
+        trip.participants = trip.participants.map((participant) => {
+            const { userId, balance } = participant;
 
             if (userId === loggedInUserId) {
+                const updatedBalance = balance + (amountInILS - sharePerUser);
                 return {
                     ...participant,
-                    balance: currentBalance + (totalAmount - individualShare),
+                    balance: roundToTwoDecimals(updatedBalance),
                 };
             }
 
-            if (beneficiaries.includes(userId)) {
+            if (beneficiaryUserIds.includes(userId)) {
+                const updatedBalance = balance - sharePerUser;
                 return {
                     ...participant,
-                    balance: currentBalance - individualShare,
+                    balance: roundToTwoDecimals(updatedBalance),
                 };
             }
 
             return participant;
         });
 
-        await TripsManager.updateOne(tripData);
+        await TripsManager.updateOne(trip);
 
-        const paymentToSave: Payments = {
+        const paymentRecord: Payment = {
             ...paymentInput,
             payerId: loggedInUserId,
+            amountInILS: roundToTwoDecimals(amountInILS),
         };
 
-        return PaymentsModel.create(paymentToSave);
+        return await PaymentsModel.create(paymentRecord);
     };
+
+
 
 
 

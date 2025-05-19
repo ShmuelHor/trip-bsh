@@ -16,11 +16,15 @@ const PaymentsSchema = new mongoose.Schema<PaymentsDocument>(
             type: String,
             required: true,
         },
+        amountInILS: {
+            type: Number,
+            required: false,
+        },
         payerId: {
             type: String,
             required: true,
         },
-        forUserIds: {
+        beneficiaryUserIds: {
             type: [String],
             required: true,
         },
