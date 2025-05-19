@@ -8,7 +8,7 @@ export const config = {
     users: {
         baseRoute: env.get('USERS_BASE_ROUTE').default('/api/users').asString(),
         mongo: {
-            uri: env.get('MONGO_URI').default('mongodb://localhost/tripbsh').asString(),
+            uri: env.get('MONGO_URI').asString(),
             usersCollectionName: env.get('USERS_COLLECTION_NAME').default('users').asString(),
         },
     },
