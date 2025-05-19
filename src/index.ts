@@ -2,7 +2,7 @@ import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
-import cors from 'cors'; 
+import cors from 'cors';
 import { config } from './config';
 import { appRouter } from './express/router';
 import { errorMiddleware } from './utils/express/error';
@@ -19,7 +19,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+console.log("mongo URI: ",config.users.mongo.uri);
 mongoose
     .connect(config.users.mongo.uri)
     .then(() => console.log('✅ Connected to MongoDB'))
