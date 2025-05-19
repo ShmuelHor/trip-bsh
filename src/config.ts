@@ -8,21 +8,21 @@ export const config = {
     users: {
         baseRoute: env.get('USERS_BASE_ROUTE').default('/api/users').asString(),
         mongo: {
-            uri: env.get('MONGO_URI').default('mongodb+srv://shmuelhor:shmuelhor@cluster0.l3em5.mongodb.net/tripbsh?retryWrites=true&w=majority&appName=Cluster0').asString(),
+            uri: env.get('USERS_MONGO_URI').required().asString(),
             usersCollectionName: env.get('USERS_COLLECTION_NAME').default('users').asString(),
         },
     },
     trips: {
         baseRoute: env.get('TRIPS_BASE_ROUTE').default('/api/trips').asString(),
         mongo: {
-            uri: env.get('MONGO_URI').default('mongodb://localhost/tripbsh').asString(),
+            uri: env.get('TRIPS_MONGO_URI').required().asString(),
             tripsCollectionName: env.get('TRIPS_COLLECTION_NAME').default('trips').asString(),
         },
     },
     payments: {
         baseRoute: env.get('PAYMENTS_BASE_ROUTE').default('/api/payments').asString(),
         mongo: {
-            uri: env.get('MONGO_URI').default('mongodb://localhost/tripbsh').asString(),
+            uri: env.get('PAYMENTS_MONGO_URI').required().asString(),
             paymentsCollectionName: env.get('PAYMENTS_COLLECTION_NAME').default('payments').asString(),
         },
     },
