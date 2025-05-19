@@ -5,7 +5,7 @@ import { createOneRequestSchema, getAllPaymentsByTripIdRequestSchema } from './v
 
 export class PaymentsController {
     static createOne = async (req: TypedRequest<typeof createOneRequestSchema>, res: Response) => {
-        res.json(await PaymentsManager.createOne(req.body));
+        res.json(await PaymentsManager.createOne(req.body, req.user._id.toString()));
     };
 
     static getAllPaymentsByTripId = async (req: TypedRequest<typeof getAllPaymentsByTripIdRequestSchema>, res: Response) => {

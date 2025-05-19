@@ -45,8 +45,15 @@ export class TripsManager {
             },
         ]);
     };
+    static updateOne = async (trip: TripDocument) => {
+        return await TripsModel.findByIdAndUpdate(trip._id, trip, { new: true, runValidators: true }).lean().exec();
+    };
 
-    static getById = async (tripId: string, userId: string) => {
+    static getById = async (tripId: string) => {
+        return await TripsModel.findById(tripId).orFail().lean().exec();
+    }
+
+    static getTripDetailsForUser = async (tripId: string, userId: string) => {
         const trip = await TripsModel.findById(tripId).orFail().lean().exec();
 
         const currentParticipant = trip.participants.find((p) => p.userId === userId.toString());

@@ -7,12 +7,13 @@ const paymentFields = z
         tripId: zodMongoObjectId,
         amount: z.number().min(0, { message: 'Amount must be positive' }),
         currency: z.string().min(1, { message: 'Currency is required' }),
-        payerId: zodMongoObjectId,
+        payerId: zodMongoObjectId.optional().or(z.literal(undefined)),
         forUserIds: z.array(zodMongoObjectId),
         description: z.string().min(1, { message: 'Description is required' }),
         paymentDate: z.coerce.date(),
     })
     .required();
+
 
 export const createOneRequestSchema = z.object({
     body: paymentFields,
