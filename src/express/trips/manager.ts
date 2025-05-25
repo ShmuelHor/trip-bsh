@@ -96,4 +96,53 @@ export class TripsManager {
             userBalance,
         };
     };
+
+    static getSummaryOfTrip = async (tripId: string, userId: string) => {
+
+        const trip: TripDocument = await TripsModel.findById(tripId).orFail().lean().exec();
+        const participants = trip.participants;
+
+        const creditors = participants
+            .filter(p => p.balance > 0)
+            .map(p => ({ userId: p.userId, balance: p.balance }));
+
+        const debtors = participants
+            .filter(p => p.balance < 0)
+            .map(p => ({ userId: p.userId, balance: -p.balance })); // חיובי לצורך החישוב
+
+        const transactions: { from: string; to: string; amount: number }[] = [];
+
+        let i = 0, j = 0;
+
+        while (i < debtors.length && j < creditors.length) {
+            const debtor = debtors[i];
+            const creditor = creditors[j];
+            const amount = Math.min(debtor.balance, creditor.balance);
+
+            transactions.push({
+                from: debtor.userId,
+                to: creditor.userId,
+                amount: Math.round(amount * 100) / 100,
+            });
+
+            debtor.balance -= amount;
+            creditor.balance -= amount;
+
+            if (debtor.balance === 0) i++;
+            if (creditor.balance === 0) j++;
+        }
+
+        const mySummary = {
+            toPay: transactions.filter(t => t.from === userId),
+            toReceive: transactions.filter(t => t.to === userId),
+        };
+
+        return {
+            tripId,
+            tripName: trip.name,
+            transactions,
+            mySummary,
+        };
+    };
+
 }

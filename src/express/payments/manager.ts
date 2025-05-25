@@ -47,13 +47,11 @@ export class PaymentsManager {
         return await PaymentsModel.create(paymentRecord);
     };
 
-
-
-
-
     static getAllPaymentsByTripId = async (tripId: string, userId: string) => {
         const trip = await TripsManager.getTripDetailsForUser(tripId, userId);
         const payments = await PaymentsModel.find({ tripId }).lean().exec();
         return { trip, payments };
     };
+
+
 }

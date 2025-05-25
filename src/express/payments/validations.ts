@@ -7,7 +7,7 @@ const paymentFields = z
     tripId: zodMongoObjectId,
     amount: z.number().min(0, { message: 'Amount must be positive' }),
     currency: z.string().min(1, { message: 'Currency is required' }),
-    amountInILS: z.number().optional().or(z.literal(undefined)), 
+    amountInILS: z.number().optional().or(z.literal(undefined)),
     payerId: zodMongoObjectId.optional().or(z.literal(undefined)),
     beneficiaryUserIds: z.array(zodMongoObjectId),
     description: z.string().min(1, { message: 'Description is required' }),
@@ -30,3 +30,5 @@ export const getAllPaymentsByTripIdRequestSchema = z.object({
         id: zodMongoObjectId,
     }),
 });
+
+
