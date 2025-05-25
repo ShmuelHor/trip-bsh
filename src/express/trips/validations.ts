@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export const zodMongoObjectId = z.string().regex(/^[0-9a-fA-F]{24}$/, { message: 'Invalid ObjectId' });
+
 export const tripParticipantSchema = z.object({
     userId: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: 'Invalid userId' }),
     balance: z.number(),
@@ -33,6 +35,14 @@ export const getByIdRequestSchema = z.object({
     body: z.object({}),
     query: z.object({}),
     params: z.object({
-        id: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: 'Invalid TripId' }),
+        id: zodMongoObjectId,
+    }),
+});
+
+export const getSummaryOfTripRequestSchema = z.object({
+    body: z.object({}),
+    query: z.object({}),
+    params: z.object({
+        id: zodMongoObjectId,
     }),
 });

@@ -3,100 +3,100 @@
     {
       "key": "USD",
       "currentExchangeRate": 3.549,
-      "currentChange": 0.2542372881355932,
+      "currentChange": 0.6808510638297872,
       "unit": 1,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "GBP",
-      "currentExchangeRate": 4.7242,
-      "currentChange": 0.5148936170212766,
+      "currentExchangeRate": 4.7628,
+      "currentChange": 1.1704229241455488,
       "unit": 1,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "JPY",
-      "currentExchangeRate": 2.4434,
-      "currentChange": 0.7836990595611285,
+      "currentExchangeRate": 2.4709,
+      "currentChange": 1.3411533098187187,
       "unit": 100,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "EUR",
-      "currentExchangeRate": 3.9775,
-      "currentChange": 0.4368466239078834,
+      "currentExchangeRate": 4.0267,
+      "currentChange": 1.5817356205852675,
       "unit": 1,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "AUD",
-      "currentExchangeRate": 2.2814,
-      "currentChange": 0.5819592628516004,
+      "currentExchangeRate": 2.2879,
+      "currentChange": 1.198690728945506,
       "unit": 1,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "CAD",
-      "currentExchangeRate": 2.5436,
-      "currentChange": 0.509740388034931,
+      "currentExchangeRate": 2.5571,
+      "currentChange": 1.1591106891367988,
       "unit": 1,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "DKK",
-      "currentExchangeRate": 0.5331,
-      "currentChange": 0.4143906573742701,
+      "currentExchangeRate": 0.5399,
+      "currentChange": 1.6186711838885752,
       "unit": 1,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "NOK",
-      "currentExchangeRate": 0.3417,
-      "currentChange": 0.5,
+      "currentExchangeRate": 0.3497,
+      "currentChange": 2.1618463336254745,
       "unit": 1,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "ZAR",
-      "currentExchangeRate": 0.1963,
-      "currentChange": 0.3065917220235054,
+      "currentExchangeRate": 0.1984,
+      "currentChange": 1.5353121801432958,
       "unit": 1,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "SEK",
-      "currentExchangeRate": 0.3648,
-      "currentChange": 0.3576341127922971,
+      "currentExchangeRate": 0.3711,
+      "currentChange": 1.8945634266886326,
       "unit": 1,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "CHF",
-      "currentExchangeRate": 4.255,
-      "currentChange": 0.8174386920980926,
+      "currentExchangeRate": 4.3084,
+      "currentChange": 1.9040185434849453,
       "unit": 1,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "JOD",
-      "currentExchangeRate": 5.0058,
-      "currentChange": 0.26639959939909863,
+      "currentExchangeRate": 5.0061,
+      "currentChange": 0.6959670119682189,
       "unit": 1,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "LBP",
       "currentExchangeRate": 0.0004,
       "currentChange": 0,
       "unit": 10,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     },
     {
       "key": "EGP",
-      "currentExchangeRate": 0.0708,
-      "currentChange": 0.28328611898017,
+      "currentExchangeRate": 0.0712,
+      "currentChange": 0.7072135785007072,
       "unit": 1,
-      "lastUpdate": "2025-05-16T09:21:03.2344056Z"
+      "lastUpdate": "2025-05-21T12:25:02.740394Z"
     }
   ]
 }
