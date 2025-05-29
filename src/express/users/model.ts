@@ -4,6 +4,10 @@ import { UserDocument } from './interface';
 
 const UsersSchema = new mongoose.Schema<UserDocument>(
     {
+        fullname: {
+            type: String,
+            required: true,
+        },
         username: {
             type: String,
             required: true,
