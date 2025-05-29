@@ -7,6 +7,9 @@ import { tripsRouter } from './trips/router';
 import { usersRouter } from './users/router';
 
 export const appRouter = Router();
+appRouter.use(['/isAlive', '/isalive', '/health'], (_req, res) => {
+    res.status(200).send('alive');
+});
 appRouter.use(config.authentication.baseRoute, authenticationRouter);
 appRouter.use(authenticateToken);
 

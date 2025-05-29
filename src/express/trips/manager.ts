@@ -1,12 +1,27 @@
 import { UserDocument } from '../users/interface';
 import { UsersManager } from '../users/manager';
-import { Trip, TripDocument } from './interface';
+import { createTrip, Trip, TripDocument } from './interface';
 import { TripsModel } from './model';
 
 export class TripsManager {
-    static createOne = async (trip: Trip): Promise<TripDocument> => {
-        return TripsModel.create(trip);
+    static createOne = async (trip: createTrip): Promise<TripDocument> => {
+        const phonenumbers = await UsersManager.getUserIdsByPhoneNumbers(trip.phonenumbers)
+        const participants = phonenumbers.map((userId) => ({
+            userId,
+            balance: 0,
+        }));
+        const newTrip: Trip = {
+            name: trip.name,
+            participants,
+            startDate: trip.startDate,
+            endDate: trip.endDate,
+        };
+
+        const createdTrip = await TripsModel.create(newTrip);
+        return createdTrip;
     };
+
+
 
     static getAllTripsByUserId = async (userId: string) => {
         return await TripsModel.aggregate([

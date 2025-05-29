@@ -1,16 +1,15 @@
 import { z } from 'zod';
 
-export const zodMongoObjectId = z.string().regex(/^[0-9a-fA-F]{24}$/, { message: 'Invalid ObjectId' });
-
-export const tripParticipantSchema = z.object({
-    userId: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: 'Invalid userId' }),
-    balance: z.number(),
+export const zodMongoObjectId = z.string().regex(/^[0-9a-fA-F]{24}$/, {
+    message: 'Invalid ObjectId',
 });
 
 export const tripSchema = z
     .object({
         name: z.string().min(1, { message: 'Name is required' }),
-        participants: z.array(tripParticipantSchema),
+        phonenumbers: z.array(
+            z.string().regex(/^(\+?\d{9,15})$/, { message: 'Invalid phone number format' })
+        ),
         startDate: z.coerce.date(),
         endDate: z.coerce.date(),
     })
@@ -18,6 +17,7 @@ export const tripSchema = z
         message: 'End date must be after start date',
         path: ['endDate'],
     });
+
 
 export const createOneRequestSchema = z.object({
     body: tripSchema,

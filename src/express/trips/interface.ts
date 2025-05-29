@@ -15,3 +15,10 @@ export interface TripDocument extends Trip {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface createTrip {
+    name: string;
+    phonenumbers: string[];
+    startDate: Date;
+    endDate: Date;
+}
