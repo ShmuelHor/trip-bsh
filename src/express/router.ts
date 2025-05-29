@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { config } from '../config';
-// import { authenticateToken } from '../utils/express/authMiddleware';
+import { authenticateToken } from '../utils/express/authMiddleware';
 import { authenticationRouter } from './authentication/router';
 import { paymentsRouter } from './payments/router';
 import { tripsRouter } from './trips/router';
@@ -11,7 +11,8 @@ appRouter.use(['/isAlive', '/isalive', '/health'], (_req, res) => {
     res.status(200).send('alive');
 });
 appRouter.use(config.authentication.baseRoute, authenticationRouter);
-// appRouter.use(authenticateToken);
+
+appRouter.use(authenticateToken);
 
 appRouter.use(config.users.baseRoute, usersRouter);
 appRouter.use(config.trips.baseRoute, tripsRouter);
