@@ -22,3 +22,5 @@ Thumbs.db
 
 # TypeScript build info (אם תשתמש ב-tsc --build)
 *.tsbuildinfo
+
+dist

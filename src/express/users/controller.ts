@@ -3,11 +3,9 @@ import { TypedRequest } from '../../utils/zod';
 import { UsersManager } from './manager';
 import { getByIdRequestSchema } from './validations';
 import { registerRequestSchema } from '../authentication/validations';
-import { console } from 'inspector';
 
 export class UsersController {
     static createOne = async (req: TypedRequest<typeof registerRequestSchema>, res: Response) => {
-        console.log('createOne', req.body);
         res.json(await UsersManager.createOne(req.body));
     };
 
