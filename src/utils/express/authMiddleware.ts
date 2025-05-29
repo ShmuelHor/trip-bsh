@@ -8,7 +8,10 @@ interface JwtPayload {
 }
 
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
+    console.log('Cookies:', req.cookies);
+
     const token = req.cookies[config.authentication.token_name];
+    console.log('Token:', token);
 
     if (!token) {
         res.status(401).json({ message: 'No token provided' });
