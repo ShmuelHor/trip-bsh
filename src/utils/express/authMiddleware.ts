@@ -20,6 +20,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         res.status(401).json({ message: 'No token provided' });
         return;
     }
+    console.log('Authentication Middleware Triggered');
 
     try {
         const decoded = jwt.verify(token, config.authentication.secret_key) as JwtPayload;
