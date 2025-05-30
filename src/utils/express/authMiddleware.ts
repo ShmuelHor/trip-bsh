@@ -8,22 +8,23 @@ interface JwtPayload {
 }
 
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.cookies) {
-        res.status(401).json({ message: 'No cookies found' });
-        return;
-    }
-    const token = req.cookies[config.authentication.token_name];
-
-    if (!token) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
         res.status(401).json({ message: 'No token provided' });
         return;
     }
 
+    const token = authHeader.split(' ')[1];
+
     try {
         const decoded = jwt.verify(token, config.authentication.secret_key) as JwtPayload;
         const user = await UsersManager.getById(decoded.userId);
+        if (!user) {
+            res.status(401).json({ message: 'User not found' });
+            return;
+        }
         req.user = user;
-        next();
+        next(); 
     } catch (err) {
         res.status(403).json({ message: 'Invalid token' });
     }

@@ -1,4 +1,3 @@
-import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
@@ -14,11 +13,9 @@ const port = config.service.port;
 app.use(
     cors({
         origin: 'https://calculatetrips.netlify.app',
-        credentials: true,
     }),
 );
 
-app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
