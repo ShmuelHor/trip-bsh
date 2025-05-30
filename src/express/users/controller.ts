@@ -10,7 +10,6 @@ export class UsersController {
     };
 
     static getById = async (req: TypedRequest<typeof getByIdRequestSchema>, res: Response) => {
-        const { id } = req.params;
-        res.json(await UsersManager.getById(id));
+        res.json(await UsersManager.getById(req.user._id));
     };
 }

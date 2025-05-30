@@ -8,7 +8,7 @@ import { loginRequestSchema } from './validations';
 export class AuthenticationController {
     static login = async (req: TypedRequest<typeof loginRequestSchema>, res: Response) => {
         const { email, password } = req.body;
-
+        console.log('Login attempt:', { email, password });
         const user = await UsersManager.getByEmail(email);
         if (!user) {
             res.status(401).json({ message: 'Invalid credentials' });
@@ -21,14 +21,24 @@ export class AuthenticationController {
         }
 
         const token = jwt.sign({ userId: user._id }, config.authentication.secret_key, { expiresIn: '30d' });
+        // res.status(200)
+        //     .cookie(config.authentication.token_name, token, {
+        //         httpOnly: true,
+        //         secure: true,
+        //         sameSite: 'none',
+        //         path: '/',
+        //         maxAge: 30 * 24 * 60 * 60 * 1000,
+        //     })
+        //     .json({ message: 'Login successful' });
         res.status(200)
-            .cookie(config.authentication.token_name, token, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'none',
-                path: '/',
-                maxAge: 30 * 24 * 60 * 60 * 1000,
-            })
-            .json({ message: 'Login successful' });
+   .cookie(config.authentication.token_name, token, {
+       httpOnly: true,
+       secure: false,                 // בזמן פיתוח ב-HTTP (localhost)
+       sameSite: 'lax',              // מאפשר שליחה בבקשות cross-origin
+       path: '/',
+       maxAge: 30 * 24 * 60 * 60 * 1000,
+   })
+   .json({ message: 'Login successful' });
+
     };
 }

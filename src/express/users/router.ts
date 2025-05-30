@@ -4,4 +4,4 @@ import { UsersController } from './controller';
 import { getByIdRequestSchema } from './validations';
 export const usersRouter = Router();
 
-usersRouter.get(`/:id`, validateRequest(getByIdRequestSchema), wrapController(UsersController.getById));
+usersRouter.get(`/is-logged-in`, validateRequest(getByIdRequestSchema), wrapController(UsersController.getById));
