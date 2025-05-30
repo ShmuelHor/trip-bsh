@@ -15,5 +15,5 @@ export class TripsController {
     static getSummaryOfTrip = async (req: TypedRequest<typeof getSummaryOfTripRequestSchema>, res: Response) => {
         const { id } = req.params;
         res.json(await TripsManager.getSummaryOfTrip(id, req.user._id.toString()));
-    }
+    };
 }

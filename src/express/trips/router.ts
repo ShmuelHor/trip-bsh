@@ -9,4 +9,3 @@ tripsRouter.post('/', validateRequest(createOneRequestSchema), wrapController(Tr
 tripsRouter.get('/ofUser', validateRequest(getAllTripsByUserIdRequestSchema), wrapController(TripsController.getAllTripsByUserId));
 
 tripsRouter.get('/summary/:id', validateRequest(getSummaryOfTripRequestSchema), wrapController(TripsController.getSummaryOfTrip));
-

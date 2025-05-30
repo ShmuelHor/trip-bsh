@@ -11,10 +11,12 @@ import { loggerMiddleware } from './utils/logger/middleware';
 const app = express();
 const port = config.service.port;
 
-app.use(cors({
-    origin: 'https://calculatetrips.netlify.app',  
-    credentials: true,
-}));
+app.use(
+    cors({
+        origin: 'https://calculatetrips.netlify.app',
+        credentials: true,
+    }),
+);
 
 app.use(cookieParser());
 app.use(express.json());

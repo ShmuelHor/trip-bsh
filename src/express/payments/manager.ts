@@ -11,8 +11,7 @@ export class PaymentsManager {
         const amountInILS = await convertCurrencyToILS(originalAmount, currency);
         const sharePerUser = amountInILS / beneficiaryUserIds.length;
 
-        const roundToTwoDecimals = (value: number): number =>
-            Math.round(value * 100) / 100;
+        const roundToTwoDecimals = (value: number): number => Math.round(value * 100) / 100;
 
         trip.participants = trip.participants.map((participant) => {
             const { userId, balance } = participant;
@@ -52,6 +51,4 @@ export class PaymentsManager {
         const payments = await PaymentsModel.find({ tripId }).lean().exec();
         return { trip, payments };
     };
-
-
 }
