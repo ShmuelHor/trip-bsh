@@ -24,7 +24,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
             return;
         }
         req.user = user;
-        next(); 
+        next();
     } catch (err) {
         res.status(403).json({ message: 'Invalid token' });
     }

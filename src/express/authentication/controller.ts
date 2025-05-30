@@ -21,9 +21,9 @@ export class AuthenticationController {
         }
 
         const token = jwt.sign({ userId: user._id }, config.authentication.secret_key, { expiresIn: '30d' });
-       res.status(200).json({
+        res.status(200).json({
             message: 'Login successful',
-            token
+            token,
         });
     };
 }
