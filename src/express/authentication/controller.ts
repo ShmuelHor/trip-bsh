@@ -23,8 +23,8 @@ export class AuthenticationController {
         const token = jwt.sign({ userId: user._id }, config.authentication.secret_key, { expiresIn: '30d' });
         res.status(200).cookie(config.authentication.token_name, token, {
             httpOnly: true,
-            secure: false,         
-            sameSite: 'lax',
+            secure: true,         
+            sameSite: 'none',
             path: '/',
             maxAge: 30 * 24 * 60 * 60 * 1000,
         }).json({ message: 'Login successful' });
