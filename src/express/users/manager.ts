@@ -15,8 +15,9 @@ export class UsersManager {
         return await UsersModel.findById(id).orFail(new DocumentNotFoundError(id)).lean().exec();
     };
     static getUserIdsByPhoneNumbers = async (phoneNumbers: string[]): Promise<string[]> => {
-        const users = await UsersModel.find({ phonenumber: { $in: phoneNumbers } }).lean().exec();
-        return users.map(user => user._id.toString());
+        const users = await UsersModel.find({ phonenumber: { $in: phoneNumbers } })
+            .lean()
+            .exec();
+        return users.map((user) => user._id.toString());
     };
-
 }

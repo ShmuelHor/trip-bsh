@@ -12,5 +12,4 @@ export class PaymentsController {
         const { id } = req.params;
         res.json(await PaymentsManager.getAllPaymentsByTripId(id, req.user._id));
     };
-
 }

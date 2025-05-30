@@ -5,7 +5,7 @@ import { TripsModel } from './model';
 
 export class TripsManager {
     static createOne = async (trip: createTrip): Promise<TripDocument> => {
-        const phonenumbers = await UsersManager.getUserIdsByPhoneNumbers(trip.phonenumbers)
+        const phonenumbers = await UsersManager.getUserIdsByPhoneNumbers(trip.phonenumbers);
         const participants = phonenumbers.map((userId) => ({
             userId,
             balance: 0,
@@ -20,8 +20,6 @@ export class TripsManager {
         const createdTrip = await TripsModel.create(newTrip);
         return createdTrip;
     };
-
-
 
     static getAllTripsByUserId = async (userId: string) => {
         return await TripsModel.aggregate([
@@ -66,7 +64,7 @@ export class TripsManager {
 
     static getById = async (tripId: string) => {
         return await TripsModel.findById(tripId).orFail().lean().exec();
-    }
+    };
 
     static getTripDetailsForUser = async (tripId: string, userId: string) => {
         const trip = await TripsModel.findById(tripId).orFail().lean().exec();
@@ -113,21 +111,17 @@ export class TripsManager {
     };
 
     static getSummaryOfTrip = async (tripId: string, userId: string) => {
-
         const trip: TripDocument = await TripsModel.findById(tripId).orFail().lean().exec();
         const participants = trip.participants;
 
-        const creditors = participants
-            .filter(p => p.balance > 0)
-            .map(p => ({ userId: p.userId, balance: p.balance }));
+        const creditors = participants.filter((p) => p.balance > 0).map((p) => ({ userId: p.userId, balance: p.balance }));
 
-        const debtors = participants
-            .filter(p => p.balance < 0)
-            .map(p => ({ userId: p.userId, balance: -p.balance })); // חיובי לצורך החישוב
+        const debtors = participants.filter((p) => p.balance < 0).map((p) => ({ userId: p.userId, balance: -p.balance })); // חיובי לצורך החישוב
 
         const transactions: { from: string; to: string; amount: number }[] = [];
 
-        let i = 0, j = 0;
+        let i = 0,
+            j = 0;
 
         while (i < debtors.length && j < creditors.length) {
             const debtor = debtors[i];
@@ -148,8 +142,8 @@ export class TripsManager {
         }
 
         const mySummary = {
-            toPay: transactions.filter(t => t.from === userId),
-            toReceive: transactions.filter(t => t.to === userId),
+            toPay: transactions.filter((t) => t.from === userId),
+            toReceive: transactions.filter((t) => t.to === userId),
         };
 
         return {
@@ -159,5 +153,4 @@ export class TripsManager {
             mySummary,
         };
     };
-
 }
