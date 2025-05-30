@@ -12,7 +12,7 @@ const app = express();
 const port = config.service.port;
 
 app.use(cors({
-    origin: 'http://localhost:5173',  
+    origin: 'https://calculatetrips.netlify.app',  
     credentials: true,
 }));
 
