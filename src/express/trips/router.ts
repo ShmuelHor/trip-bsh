@@ -6,6 +6,7 @@ import {
     createOneRequestSchema,
     getAllTripsByUserIdRequestSchema,
     getSummaryOfTripRequestSchema,
+    updateTripParticipantsRequestSchema,
 } from './validations';
 export const tripsRouter = Router();
 
@@ -19,4 +20,10 @@ tripsRouter.post(
     '/join-request/:tripId',
     validateRequest(addUserToPendingApprovalRequestSchema),
     wrapController(TripsController.addUserToPendingApproval),
+);
+
+tripsRouter.put(
+    '/participants/:tripId/:userId',
+    validateRequest(updateTripParticipantsRequestSchema),
+    wrapController(TripsController.updateTripParticipants),
 );

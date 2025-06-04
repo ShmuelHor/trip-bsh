@@ -50,3 +50,12 @@ export const addUserToPendingApprovalRequestSchema = z.object({
         tripId: zodMongoObjectId,
     }),
 });
+
+export const updateTripParticipantsRequestSchema = z.object({
+    body: z.object({}),
+    query: z.object({}),
+    params: z.object({
+        tripId: zodMongoObjectId,
+        userId: zodMongoObjectId,
+    }),
+});

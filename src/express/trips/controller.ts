@@ -6,6 +6,7 @@ import {
     createOneRequestSchema,
     getAllTripsByUserIdRequestSchema,
     getSummaryOfTripRequestSchema,
+    updateTripParticipantsRequestSchema,
 } from './validations';
 
 export class TripsController {
@@ -25,5 +26,9 @@ export class TripsController {
     static addUserToPendingApproval = async (req: TypedRequest<typeof addUserToPendingApprovalRequestSchema>, res: Response) => {
         const { tripId } = req.params;
         res.json(await TripsManager.addUserToPendingApproval(tripId, req.user._id.toString()));
+    };
+    static updateTripParticipants = async (req: TypedRequest<typeof updateTripParticipantsRequestSchema>, res: Response) => {
+        const { tripId, userId } = req.params;
+        res.json(await TripsManager.updateTripParticipants(tripId, userId));
     };
 }

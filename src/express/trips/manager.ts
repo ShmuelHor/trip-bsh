@@ -107,13 +107,27 @@ export class TripsManager {
                 };
             }),
         );
-
+        const pendingApprovalUserIds = await Promise.all(
+            trip.pendingApprovalUserIds.map(async (pendingUserId) => {
+                const user: UserDocument = await UsersManager.getById(pendingUserId);
+                if (!user) {
+                    throw new Error(`Pending user with ID ${pendingUserId} not found`);
+                }
+                return {
+                    userId: pendingUserId,
+                    username: user.username,
+                    fullname: user.fullname,
+                };
+            }),
+        );
         return {
             _id: trip._id,
             name: trip.name,
             startDate: trip.startDate,
             endDate: trip.endDate,
             participants: otherParticipants,
+            ownerIds: trip.ownerIds,
+            pendingApprovalUserIds,
             userId: userIdStr,
             username,
             userBalance,
@@ -173,5 +187,11 @@ export class TripsManager {
         trip.pendingApprovalUserIds.push(userId);
 
         return await TripsModel.findByIdAndUpdate(tripId, trip, { new: true, runValidators: true }).lean().exec();
+    };
+
+    static updateTripParticipants = async (tripId: string, userId: string) => {
+        return await TripsModel.findByIdAndUpdate(tripId, { $addToSet: { participants: { userId, balance: 0 } } }, { new: true, runValidators: true })
+            .lean()
+            .exec();
     };
 }
