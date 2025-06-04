@@ -4,15 +4,18 @@ import { createTrip, Trip, TripDocument } from './interface';
 import { TripsModel } from './model';
 
 export class TripsManager {
-    static createOne = async (trip: createTrip): Promise<TripDocument> => {
-        const phonenumbers = await UsersManager.getUserIdsByPhoneNumbers(trip.phonenumbers);
-        const participants = phonenumbers.map((userId) => ({
-            userId,
-            balance: 0,
-        }));
+    static createOne = async (trip: createTrip, userId: string): Promise<TripDocument> => {
+        const participants = [
+            {
+                userId,
+                balance: 0,
+            },
+        ];
         const newTrip: Trip = {
             name: trip.name,
             participants,
+            ownerIds: [userId],
+            pendingApprovalUserIds: [],
             startDate: trip.startDate,
             endDate: trip.endDate,
         };
@@ -69,26 +72,33 @@ export class TripsManager {
     static getTripDetailsForUser = async (tripId: string, userId: string) => {
         const trip = await TripsModel.findById(tripId).orFail().lean().exec();
 
-        const currentParticipant = trip.participants.find((p) => p.userId === userId.toString());
+        const userIdStr = userId.toString();
+
+        const currentParticipant = trip.participants.find((p) => p.userId.toString() === userIdStr);
+
         if (!currentParticipant) {
-            throw new Error('User not found in trip participants');
+            if (Array.isArray(trip.pendingApprovalUserIds) && trip.pendingApprovalUserIds.includes(userIdStr)) {
+                throw new Error(`User is pending approval for the trip`);
+            } else {
+                throw new Error(`User not in the trip`);
+            }
         }
 
-        const currentUser: UserDocument = await UsersManager.getById(userId);
+        const currentUser: UserDocument = await UsersManager.getById(userIdStr);
         if (!currentUser) {
-            throw new Error('User not found');
+            throw new Error(`User with ID ${userIdStr} not found in the system`);
         }
 
         const username = currentUser.username;
         const userBalance = currentParticipant.balance;
 
-        const otherParticipantsRaw = trip.participants.filter((p) => p.userId !== userId.toString());
+        const otherParticipantsRaw = trip.participants.filter((p) => p.userId.toString() !== userIdStr);
 
         const otherParticipants = await Promise.all(
             otherParticipantsRaw.map(async (participant) => {
                 const user: UserDocument = await UsersManager.getById(participant.userId);
                 if (!user) {
-                    throw new Error('User not found');
+                    throw new Error(`User with ID ${participant.userId} not found`);
                 }
                 return {
                     userId: participant.userId,
@@ -104,7 +114,7 @@ export class TripsManager {
             startDate: trip.startDate,
             endDate: trip.endDate,
             participants: otherParticipants,
-            userId,
+            userId: userIdStr,
             username,
             userBalance,
         };
@@ -152,5 +162,16 @@ export class TripsManager {
             transactions,
             mySummary,
         };
+    };
+
+    static addUserToPendingApproval = async (tripId: string, userId: string) => {
+        const trip = await TripsModel.findById(tripId).orFail().lean().exec();
+        if (trip.pendingApprovalUserIds.includes(userId)) {
+            throw new Error(`User with ID ${userId} is already pending approval for this trip`);
+        }
+
+        trip.pendingApprovalUserIds.push(userId);
+
+        return await TripsModel.findByIdAndUpdate(tripId, trip, { new: true, runValidators: true }).lean().exec();
     };
 }

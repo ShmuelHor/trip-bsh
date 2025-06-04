@@ -1,8 +1,8 @@
 import { Response } from 'express';
 import { TypedRequest } from '../../utils/zod';
+import { registerRequestSchema } from '../authentication/validations';
 import { UsersManager } from './manager';
 import { getByIdRequestSchema } from './validations';
-import { registerRequestSchema } from '../authentication/validations';
 
 export class UsersController {
     static createOne = async (req: TypedRequest<typeof registerRequestSchema>, res: Response) => {
