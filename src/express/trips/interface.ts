@@ -6,6 +6,8 @@ export interface TripParticipant {
 export interface Trip {
     name: string;
     participants: TripParticipant[];
+    ownerIds: string[];
+    pendingApprovalUserIds: string[];
     startDate: Date;
     endDate: Date;
 }
@@ -18,7 +20,6 @@ export interface TripDocument extends Trip {
 
 export interface createTrip {
     name: string;
-    phonenumbers: string[];
     startDate: Date;
     endDate: Date;
 }

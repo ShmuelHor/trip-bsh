@@ -7,7 +7,6 @@ export const zodMongoObjectId = z.string().regex(/^[0-9a-fA-F]{24}$/, {
 export const tripSchema = z
     .object({
         name: z.string().min(1, { message: 'Name is required' }),
-        phonenumbers: z.array(z.string().regex(/^(\+?\d{9,15})$/, { message: 'Invalid phone number format' })),
         startDate: z.coerce.date(),
         endDate: z.coerce.date(),
     })
@@ -41,5 +40,13 @@ export const getSummaryOfTripRequestSchema = z.object({
     query: z.object({}),
     params: z.object({
         id: zodMongoObjectId,
+    }),
+});
+
+export const addUserToPendingApprovalRequestSchema = z.object({
+    body: z.object({}),
+    query: z.object({}),
+    params: z.object({
+        tripId: zodMongoObjectId,
     }),
 });

@@ -1,11 +1,16 @@
 import { Response } from 'express';
 import { TypedRequest } from '../../utils/zod';
 import { TripsManager } from './manager';
-import { createOneRequestSchema, getAllTripsByUserIdRequestSchema, getSummaryOfTripRequestSchema } from './validations';
+import {
+    addUserToPendingApprovalRequestSchema,
+    createOneRequestSchema,
+    getAllTripsByUserIdRequestSchema,
+    getSummaryOfTripRequestSchema,
+} from './validations';
 
 export class TripsController {
     static createOne = async (req: TypedRequest<typeof createOneRequestSchema>, res: Response) => {
-        res.json(await TripsManager.createOne(req.body));
+        res.json(await TripsManager.createOne(req.body, req.user._id.toString()));
     };
 
     static getAllTripsByUserId = async (req: TypedRequest<typeof getAllTripsByUserIdRequestSchema>, res: Response) => {
@@ -15,5 +20,10 @@ export class TripsController {
     static getSummaryOfTrip = async (req: TypedRequest<typeof getSummaryOfTripRequestSchema>, res: Response) => {
         const { id } = req.params;
         res.json(await TripsManager.getSummaryOfTrip(id, req.user._id.toString()));
+    };
+
+    static addUserToPendingApproval = async (req: TypedRequest<typeof addUserToPendingApprovalRequestSchema>, res: Response) => {
+        const { tripId } = req.params;
+        res.json(await TripsManager.addUserToPendingApproval(tripId, req.user._id.toString()));
     };
 }

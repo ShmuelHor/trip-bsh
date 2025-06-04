@@ -10,6 +10,6 @@ export class PaymentsController {
 
     static getAllPaymentsByTripId = async (req: TypedRequest<typeof getAllPaymentsByTripIdRequestSchema>, res: Response) => {
         const { id } = req.params;
-        res.json(await PaymentsManager.getAllPaymentsByTripId(id, req.user._id));
+        res.json(await PaymentsManager.getAllPaymentsOfTrip(id, req.user._id));
     };
 }
