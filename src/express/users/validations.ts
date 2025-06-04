@@ -15,3 +15,20 @@ export const getByIdRequestSchema = z.object({
     query: z.object({}),
     params: z.object({}),
 });
+
+export const getPendingApprovalUsersRequestSchema = z.object({
+    body: z.object({}),
+    query: z.object({}),
+    params: z.object({
+        tripId: zodMongoObjectId,
+    }),
+});
+
+export const removeUserFromPendingApprovalRequestSchema = z.object({
+    body: z.object({}),
+    query: z.object({}),
+    params: z.object({
+        tripId: zodMongoObjectId,
+        userId: zodMongoObjectId,
+    }),
+});
