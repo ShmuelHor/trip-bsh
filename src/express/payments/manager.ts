@@ -1,5 +1,6 @@
 import { convertCurrencyToILS } from '../../utils/currency-converter';
 import { TripsManager } from '../trips/manager';
+import { UsersModel } from '../users/model';
 import { Payment, PaymentsDocument } from './interface';
 import { PaymentsModel } from './model';
 
@@ -46,9 +47,27 @@ export class PaymentsManager {
         return await PaymentsModel.create(paymentRecord);
     };
 
-    static getAllPaymentsOfTrip = async (tripId: string, userId: string) => {
-        const trip = await TripsManager.getTripDetailsForUser(tripId, userId);
-        const payments = await PaymentsModel.find({ tripId }).lean().exec();
-        return { trip, payments };
-    };
+static getAllPaymentsOfTrip = async (tripId: string, userId: string) => {
+  const trip = await TripsManager.getTripDetailsForUser(tripId, userId);
+  const payments = await PaymentsModel.find({ tripId }).lean().exec();
+
+  const firstPayerId = payments[0]?.payerId;
+  const beneficiaryIds = [...new Set(payments.flatMap(p => p.beneficiaryUserIds))];
+
+  const [payer, beneficiaries] = await Promise.all([
+    firstPayerId ? UsersModel.findById(firstPayerId).lean().exec() : null,
+    UsersModel.find({ _id: { $in: beneficiaryIds } }).lean().exec()
+  ]);
+const enrichedPayments = payments.map(payment => ({
+  ...payment,
+  payerName: payer?.fullname ?? 'לא ידוע',
+  beneficiaryNames: beneficiaries.map(user => user.fullname),
+}));
+
+return {
+  trip,
+  payments: enrichedPayments,
+};
+};
+
 }
