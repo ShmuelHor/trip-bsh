@@ -1,5 +1,6 @@
 import { UserDocument } from '../users/interface';
 import { UsersManager } from '../users/manager';
+import { UsersModel } from '../users/model';
 import { createTrip, Trip, TripDocument } from './interface';
 import { TripsModel } from './model';
 
@@ -134,49 +135,59 @@ export class TripsManager {
         };
     };
 
-    static getSummaryOfTrip = async (tripId: string, userId: string) => {
-        const trip: TripDocument = await TripsModel.findById(tripId).orFail().lean().exec();
-        const participants = trip.participants;
+    static getSummaryOfTrip = async (tripId: string) => {
+  const trip: TripDocument = await TripsModel.findById(tripId).orFail().lean().exec();
+  const participants = trip.participants;
 
-        const creditors = participants.filter((p) => p.balance > 0).map((p) => ({ userId: p.userId, balance: p.balance }));
+  const creditors = participants
+    .filter((p) => p.balance > 0)
+    .map((p) => ({ userId: p.userId, balance: p.balance }));
 
-        const debtors = participants.filter((p) => p.balance < 0).map((p) => ({ userId: p.userId, balance: -p.balance })); // חיובי לצורך החישוב
+  const debtors = participants
+    .filter((p) => p.balance < 0)
+    .map((p) => ({ userId: p.userId, balance: -p.balance }));
 
-        const transactions: { from: string; to: string; amount: number }[] = [];
+  const transactions: { from: string; to: string; amount: number }[] = [];
 
-        let i = 0,
-            j = 0;
+  let i = 0,
+    j = 0;
 
-        while (i < debtors.length && j < creditors.length) {
-            const debtor = debtors[i];
-            const creditor = creditors[j];
-            const amount = Math.min(debtor.balance, creditor.balance);
+  while (i < debtors.length && j < creditors.length) {
+    const debtor = debtors[i];
+    const creditor = creditors[j];
+    const amount = Math.min(debtor.balance, creditor.balance);
 
-            transactions.push({
-                from: debtor.userId,
-                to: creditor.userId,
-                amount: Math.round(amount * 100) / 100,
-            });
+    transactions.push({
+      from: debtor.userId,
+      to: creditor.userId,
+      amount: Math.round(amount * 100) / 100,
+    });
 
-            debtor.balance -= amount;
-            creditor.balance -= amount;
+    debtor.balance -= amount;
+    creditor.balance -= amount;
 
-            if (debtor.balance === 0) i++;
-            if (creditor.balance === 0) j++;
-        }
+    if (debtor.balance === 0) i++;
+    if (creditor.balance === 0) j++;
+  }
 
-        const mySummary = {
-            toPay: transactions.filter((t) => t.from === userId),
-            toReceive: transactions.filter((t) => t.to === userId),
-        };
+  const userIds = Array.from(new Set(transactions.flatMap((t) => [t.from, t.to])));
 
-        return {
-            tripId,
-            tripName: trip.name,
-            transactions,
-            mySummary,
-        };
-    };
+  const users = await UsersModel.find({ _id: { $in: userIds } }).lean().exec();
+  const userMap = new Map(users.map((u) => [u._id.toString(), u.fullname]));
+
+  const transactionsWithNames = transactions.map((t) => ({
+    ...t,
+    fromName: userMap.get(t.from) || 'לא ידוע',
+    toName: userMap.get(t.to) || 'לא ידוע',
+  }));
+
+  return {
+    tripId,
+    tripName: trip.name,
+    transactions: transactionsWithNames,
+  };
+};
+
 
     static addUserToPendingApproval = async (tripId: string, userId: string) => {
         const trip = await TripsModel.findById(tripId).orFail().lean().exec();
