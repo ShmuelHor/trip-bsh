@@ -25,43 +25,45 @@ export class TripsManager {
         return createdTrip;
     };
 
-    static getAllTripsByUserId = async (userId: string) => {
-        return await TripsModel.aggregate([
-            {
-                $match: {
-                    'participants.userId': userId,
-                },
+   static getAllTripsByUserId = async (userId: string) => {
+    return await TripsModel.aggregate([
+        {
+            $match: {
+                'participants.userId': userId,
             },
-            {
-                $project: {
-                    _id: 1,
-                    name: 1,
-                    startDate: 1,
-                    endDate: 1,
-                    participantsCount: { $size: '$participants' },
-                    balance: {
-                        $let: {
-                            vars: {
-                                userParticipant: {
-                                    $arrayElemAt: [
-                                        {
-                                            $filter: {
-                                                input: '$participants',
-                                                as: 'participant',
-                                                cond: { $eq: ['$$participant.userId', userId] },
-                                            },
+        },
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                startDate: 1,
+                endDate: 1,
+                ownerIds: 1,
+                participantsCount: { $size: '$participants' },
+                balance: {
+                    $let: {
+                        vars: {
+                            userParticipant: {
+                                $arrayElemAt: [
+                                    {
+                                        $filter: {
+                                            input: '$participants',
+                                            as: 'participant',
+                                            cond: { $eq: ['$$participant.userId', userId] },
                                         },
-                                        0,
-                                    ],
-                                },
+                                    },
+                                    0,
+                                ],
                             },
-                            in: '$$userParticipant.balance',
                         },
+                        in: '$$userParticipant.balance',
                     },
                 },
             },
-        ]);
-    };
+        },
+    ]);
+};
+
     static updateOne = async (trip: TripDocument) => {
         return await TripsModel.findByIdAndUpdate(trip._id, trip, { new: true, runValidators: true }).lean().exec();
     };
