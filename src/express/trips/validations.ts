@@ -59,3 +59,11 @@ export const updateTripParticipantsRequestSchema = z.object({
         userId: zodMongoObjectId,
     }),
 });
+export const removeTripParticipantRequestSchema = z.object({
+    body: z.object({}),
+    query: z.object({}),
+    params: z.object({
+        tripId: zodMongoObjectId,
+        userId: zodMongoObjectId,
+    }),
+});

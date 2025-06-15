@@ -7,9 +7,7 @@ import { UsersModel } from './model';
 export class UsersManager {
     static createOne = async (user: User): Promise<UserDocument> => {
         const hashedPassword = await bcrypt.hash(user.password, 10);
-
         const newUser = { ...user, password: hashedPassword };
-
         return UsersModel.create(newUser);
     };
 
@@ -20,6 +18,7 @@ export class UsersManager {
     static getById = async (id: string): Promise<UserDocument> => {
         return await UsersModel.findById(id).orFail(new DocumentNotFoundError(id)).lean().exec();
     };
+
     static getPendingApprovalUsers = async (tripId: string) => {
         const trip = await TripsManager.getById(tripId);
         return await UsersModel.find({ _id: { $in: trip.pendingApprovalUserIds } })
@@ -37,6 +36,7 @@ export class UsersManager {
         const updatedTrip = await TripsManager.updateOne(trip);
         return updatedTrip;
     };
+
     static updateUser = async (userId: string, userFields: Partial<User>): Promise<UserDocument> => {
         if (userFields.password) {
             userFields.password = await bcrypt.hash(userFields.password, 10);
