@@ -4,6 +4,7 @@ import { config } from '../../config';
 import { TypedRequest } from '../../utils/zod';
 import { UsersManager } from '../users/manager';
 import { loginRequestSchema } from './validations';
+import { isPasswordMatch } from '../../utils/passwordUtils';
 
 export class AuthenticationController {
     static login = async (req: TypedRequest<typeof loginRequestSchema>, res: Response) => {
@@ -15,7 +16,8 @@ export class AuthenticationController {
             return;
         }
 
-        if (user.password !== password) {
+        const isMatch = await isPasswordMatch(password, user.password);
+        if (!isMatch) {
             res.status(401).json({ message: 'Invalid credentials' });
             return;
         }
