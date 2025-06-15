@@ -110,6 +110,7 @@ export class TripsManager {
                 };
             }),
         );
+
         const pendingApprovalUserIds = await Promise.all(
             trip.pendingApprovalUserIds.map(async (pendingUserId) => {
                 const user: UserDocument = await UsersManager.getById(pendingUserId);
@@ -123,6 +124,7 @@ export class TripsManager {
                 };
             }),
         );
+
         return {
             _id: trip._id,
             name: trip.name,
