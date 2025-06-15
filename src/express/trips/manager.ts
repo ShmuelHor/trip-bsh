@@ -81,9 +81,9 @@ export class TripsManager {
 
         if (!currentParticipant) {
             if (Array.isArray(trip.pendingApprovalUserIds) && trip.pendingApprovalUserIds.includes(userIdStr)) {
-                throw new Error(`User is pending approval for the trip`);
+                throw new Error('User is pending approval for the trip');
             } else {
-                throw new Error(`User not in the trip`);
+                throw new Error('User is not a participant in the trip');
             }
         }
 
@@ -179,8 +179,8 @@ export class TripsManager {
 
         const transactionsWithNames = transactions.map((t) => ({
             ...t,
-            fromName: userMap.get(t.from) || 'לא ידוע',
-            toName: userMap.get(t.to) || 'לא ידוע',
+            fromName: userMap.get(t.from) || 'Unknown',
+            toName: userMap.get(t.to) || 'Unknown',
         }));
 
         return {
@@ -205,5 +205,20 @@ export class TripsManager {
         return await TripsModel.findByIdAndUpdate(tripId, { $addToSet: { participants: { userId, balance: 0 } } }, { new: true, runValidators: true })
             .lean()
             .exec();
+    };
+
+    static removeTripParticipant = async (tripId: string, userId: string) => {
+        const trip = await TripsModel.findById(tripId).orFail().lean().exec();
+        const participant = trip.participants.find((p) => p.userId.toString() === userId.toString());
+        if (!participant) {
+            throw new Error('User is not a participant in the trip');
+        }
+        if (participant.balance !== 0) {
+            throw new Error('Participant can only be removed if their balance is 0');
+        }
+        trip.participants = trip.participants.filter((p) => p.userId.toString() !== userId.toString());
+        trip.ownerIds = trip.ownerIds.filter((ownerId) => ownerId.toString() !== userId.toString());
+        trip.pendingApprovalUserIds = trip.pendingApprovalUserIds.filter((pendingId) => pendingId.toString() !== userId.toString());
+        return await TripsModel.findByIdAndUpdate(tripId, trip, { new: true, runValidators: true }).lean().exec();
     };
 }

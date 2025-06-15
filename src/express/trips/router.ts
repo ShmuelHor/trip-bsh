@@ -6,6 +6,7 @@ import {
     createOneRequestSchema,
     getAllTripsByUserIdRequestSchema,
     getSummaryOfTripRequestSchema,
+    removeTripParticipantRequestSchema,
     updateTripParticipantsRequestSchema,
 } from './validations';
 export const tripsRouter = Router();
@@ -26,4 +27,9 @@ tripsRouter.put(
     '/participants/:tripId/:userId',
     validateRequest(updateTripParticipantsRequestSchema),
     wrapController(TripsController.updateTripParticipants),
+);
+tripsRouter.delete(
+    '/participants/:tripId/:userId',
+    validateRequest(removeTripParticipantRequestSchema),
+    wrapController(TripsController.removeTripParticipant),
 );

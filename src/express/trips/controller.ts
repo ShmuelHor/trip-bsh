@@ -6,6 +6,7 @@ import {
     createOneRequestSchema,
     getAllTripsByUserIdRequestSchema,
     getSummaryOfTripRequestSchema,
+    removeTripParticipantRequestSchema,
     updateTripParticipantsRequestSchema,
 } from './validations';
 
@@ -30,5 +31,10 @@ export class TripsController {
     static updateTripParticipants = async (req: TypedRequest<typeof updateTripParticipantsRequestSchema>, res: Response) => {
         const { tripId, userId } = req.params;
         res.json(await TripsManager.updateTripParticipants(tripId, userId));
+    };
+
+    static removeTripParticipant = async (req: TypedRequest<typeof removeTripParticipantRequestSchema>, res: Response) => {
+        const { tripId, userId } = req.params;
+        res.json(await TripsManager.removeTripParticipant(tripId, userId));
     };
 }
