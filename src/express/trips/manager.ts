@@ -15,11 +15,11 @@ export class TripsManager {
         const newTrip: Trip = {
             name: trip.name,
             participants,
-            ownerIds: [userId],
             pendingApprovalUserIds: [],
             startDate: trip.startDate,
             endDate: trip.endDate,
         };
+        console.log('Creating trip with data:', newTrip);
 
         const createdTrip = await TripsModel.create(newTrip);
         return createdTrip;
@@ -38,7 +38,6 @@ export class TripsManager {
                     name: 1,
                     startDate: 1,
                     endDate: 1,
-                    ownerIds: 1,
                     participantsCount: { $size: '$participants' },
                     balance: {
                         $let: {
@@ -72,72 +71,69 @@ export class TripsManager {
         return await TripsModel.findById(tripId).orFail().lean().exec();
     };
 
-    static getTripDetailsForUser = async (tripId: string, userId: string) => {
-        const trip = await TripsModel.findById(tripId).orFail().lean().exec();
+static getTripDetailsForUser = async (tripId: string, userId: string) => {
+    const trip = await TripsModel.findById(tripId).orFail().lean().exec();
 
-        const userIdStr = userId.toString();
+    const userIdStr = userId.toString();
 
-        const currentParticipant = trip.participants.find((p) => p.userId.toString() === userIdStr);
+    const currentParticipant = trip.participants.find((p) => p.userId.toString() === userIdStr);
 
-        if (!currentParticipant) {
-            if (Array.isArray(trip.pendingApprovalUserIds) && trip.pendingApprovalUserIds.includes(userIdStr)) {
-                throw new Error('User is pending approval for the trip');
-            } else {
-                throw new Error('User is not a participant in the trip');
+    if (!currentParticipant) {
+        if (Array.isArray(trip.pendingApprovalUserIds) && trip.pendingApprovalUserIds.includes(userIdStr)) {
+            throw new Error('User is pending approval for the trip');
+        } else {
+            throw new Error('User is not a participant in the trip');
+        }
+    }
+
+    const currentUser: UserDocument = await UsersManager.getById(userIdStr);
+    if (!currentUser) {
+        throw new Error(`User with ID ${userIdStr} not found in the system`);
+    }
+
+    const username = currentUser.username;
+    const userBalance = currentParticipant.balance;
+
+    const participants = await Promise.all(
+        trip.participants.map(async (participant) => {
+            const user: UserDocument = await UsersManager.getById(participant.userId);
+            if (!user) {
+                throw new Error(`User with ID ${participant.userId} not found`);
             }
-        }
+            return {
+                userId: participant.userId,
+                username: user.username,
+                balance: participant.balance,
+            };
+        }),
+    );
 
-        const currentUser: UserDocument = await UsersManager.getById(userIdStr);
-        if (!currentUser) {
-            throw new Error(`User with ID ${userIdStr} not found in the system`);
-        }
+    const pendingApprovalUserIds = await Promise.all(
+        trip.pendingApprovalUserIds.map(async (pendingUserId) => {
+            const user: UserDocument = await UsersManager.getById(pendingUserId);
+            if (!user) {
+                throw new Error(`Pending user with ID ${pendingUserId} not found`);
+            }
+            return {
+                userId: pendingUserId,
+                username: user.username,
+                fullname: user.fullname,
+            };
+        }),
+    );
 
-        const username = currentUser.username;
-        const userBalance = currentParticipant.balance;
-
-        const otherParticipantsRaw = trip.participants.filter((p) => p.userId.toString() !== userIdStr);
-
-        const otherParticipants = await Promise.all(
-            otherParticipantsRaw.map(async (participant) => {
-                const user: UserDocument = await UsersManager.getById(participant.userId);
-                if (!user) {
-                    throw new Error(`User with ID ${participant.userId} not found`);
-                }
-                return {
-                    userId: participant.userId,
-                    username: user.username,
-                    balance: participant.balance,
-                };
-            }),
-        );
-
-        const pendingApprovalUserIds = await Promise.all(
-            trip.pendingApprovalUserIds.map(async (pendingUserId) => {
-                const user: UserDocument = await UsersManager.getById(pendingUserId);
-                if (!user) {
-                    throw new Error(`Pending user with ID ${pendingUserId} not found`);
-                }
-                return {
-                    userId: pendingUserId,
-                    username: user.username,
-                    fullname: user.fullname,
-                };
-            }),
-        );
-
-        return {
-            _id: trip._id,
-            name: trip.name,
-            startDate: trip.startDate,
-            endDate: trip.endDate,
-            participants: otherParticipants,
-            ownerIds: trip.ownerIds,
-            pendingApprovalUserIds,
-            userId: userIdStr,
-            username,
-            userBalance,
-        };
+    return {
+        _id: trip._id,
+        name: trip.name,
+        startDate: trip.startDate,
+        endDate: trip.endDate,
+        participants,
+        pendingApprovalUserIds,
+        userId: userIdStr,
+        username,
+        userBalance,
     };
+};
 
     static getSummaryOfTrip = async (tripId: string) => {
         const trip: TripDocument = await TripsModel.findById(tripId).orFail().lean().exec();
@@ -217,7 +213,6 @@ export class TripsManager {
             throw new Error('Participant can only be removed if their balance is 0');
         }
         trip.participants = trip.participants.filter((p) => p.userId.toString() !== userId.toString());
-        trip.ownerIds = trip.ownerIds.filter((ownerId) => ownerId.toString() !== userId.toString());
         trip.pendingApprovalUserIds = trip.pendingApprovalUserIds.filter((pendingId) => pendingId.toString() !== userId.toString());
         return await TripsModel.findByIdAndUpdate(tripId, trip, { new: true, runValidators: true }).lean().exec();
     };
