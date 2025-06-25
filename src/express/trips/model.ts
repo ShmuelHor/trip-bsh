@@ -24,10 +24,6 @@ const TripsSchema = new mongoose.Schema<TripDocument>(
             type: [TripParticipantSchema],
             required: true,
         },
-        ownerIds: {
-            type: [String],
-            required: true,
-        },
         pendingApprovalUserIds: {
             type: [String],
             default: [],

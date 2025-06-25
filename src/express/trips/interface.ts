@@ -6,7 +6,6 @@ export interface TripParticipant {
 export interface Trip {
     name: string;
     participants: TripParticipant[];
-    ownerIds: string[];
     pendingApprovalUserIds: string[];
     startDate: Date;
     endDate: Date;
