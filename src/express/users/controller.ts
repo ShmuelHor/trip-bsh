@@ -12,6 +12,7 @@ import { isPasswordMatch } from '../../utils/passwordUtils';
 
 export class UsersController {
     static createOne = async (req: TypedRequest<typeof registerRequestSchema>, res: Response) => {
+        console.log('Creating user:', req.body);
         res.json(await UsersManager.createOne(req.body));
     };
 
