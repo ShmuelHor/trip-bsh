@@ -21,6 +21,22 @@ export const createOneRequestSchema = z.object({
     params: z.object({}),
 });
 
+export const deleteOneRequestSchema = z.object({
+    body: z.object({}),
+    query: z.object({}),
+    params: z.object({
+        id: zodMongoObjectId,
+    }),
+});
+
+export const updateOneRequestSchema = z.object({
+    body: paymentFields,
+    query: z.object({}),
+    params: z.object({
+        id: zodMongoObjectId,
+    }),
+});
+
 export const getAllPaymentsByTripIdRequestSchema = z.object({
     body: z.object({}),
     query: z.object({}),

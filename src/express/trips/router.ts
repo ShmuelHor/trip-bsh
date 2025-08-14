@@ -4,10 +4,12 @@ import { TripsController } from './controller';
 import {
     addUserToPendingApprovalRequestSchema,
     createOneRequestSchema,
+    deleteTripRequestSchema,
     getAllTripsByUserIdRequestSchema,
     getSummaryOfTripRequestSchema,
     removeTripParticipantRequestSchema,
     updateTripParticipantsRequestSchema,
+    updateTripRequestSchema,
 } from './validations';
 export const tripsRouter = Router();
 
@@ -32,4 +34,16 @@ tripsRouter.delete(
     '/participants/:tripId/:userId',
     validateRequest(removeTripParticipantRequestSchema),
     wrapController(TripsController.removeTripParticipant),
+);
+
+tripsRouter.put(
+    '/:tripId',
+    validateRequest(updateTripRequestSchema),
+    wrapController(TripsController.updateTrip),
+);
+
+tripsRouter.delete(
+    '/:tripId',
+    validateRequest(deleteTripRequestSchema),
+    wrapController(TripsController.deleteTrip),
 );
