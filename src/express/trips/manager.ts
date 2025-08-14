@@ -1,3 +1,5 @@
+import { PaymentsManager } from '../payments/manager';
+import { PaymentsModel } from '../payments/model';
 import { UserDocument } from '../users/interface';
 import { UsersManager } from '../users/manager';
 import { UsersModel } from '../users/model';
@@ -5,6 +7,15 @@ import { createTrip, Trip, TripDocument } from './interface';
 import { TripsModel } from './model';
 
 export class TripsManager {
+    static updateTrip = async (tripId: string, updateData: Partial<Trip>): Promise<TripDocument | null> => {
+        return await TripsModel.findByIdAndUpdate(tripId, updateData, { new: true, runValidators: true }).lean().exec();
+    };
+
+    static deleteTrip = async (tripId: string): Promise<TripDocument | null> => {
+        await PaymentsModel.deleteMany({ tripId });
+        return await TripsModel.findByIdAndDelete(tripId).lean().exec();
+    };
+
     static createOne = async (trip: createTrip, userId: string): Promise<TripDocument> => {
         const participants = [
             {
