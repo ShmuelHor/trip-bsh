@@ -1,151 +1,181 @@
-# TripBSH
+# Trip BSH Backend
 
-TripBSH היא אפליקציה לניהול הוצאות קבוצתיות בטיולים.  
-האפליקציה מחשבת בצורה חכמה כמה כל אחד צריך לשלם למי, כדי לסגור חשבון בצורה מהירה והוגנת.
+Service for group trip expense management (Node.js + Express + TypeScript + MongoDB).
 
----
+## Features
+- Users: register, fetch by id/email (password hashed with bcrypt).
+- Trips: create, list by user, details (with balances), join request (pending), approve (add participant), remove participant (only if balance = 0), summary settlement (creditors ↔ debtors).
+- Payments: create (splits + currency conversion to ILS), delete (reverts balances), update (recalculates only if amount / currency / beneficiaries changed), list by trip (with payer + beneficiaries names).
+- Currency: automatic conversion to ILS via Frankfurter (no API key). Skips conversion if already ILS/NIS/₪/ש"ח.
+- Validation: Zod schemas for params/body.
+- Errors: consistent messages (English) + 404 when documents not found.
 
-## 📑 תוכן עניינים
-- [TripBSH](#tripbsh)
-  - [📑 תוכן עניינים](#-תוכן-עניינים)
-  - [✨ תכונות](#-תכונות)
-  - [⚙️ התקנה והרצה](#️-התקנה-והרצה)
-    - [הרצה עם Docker Compose](#הרצה-עם-docker-compose)
-  - [🌍 דיפלוי](#-דיפלוי)
-  - [🛠 מבנה פרויקט](#-מבנה-פרויקט)
-  - [📡 API Endpoints](#-api-endpoints)
-  - [📄 דוגמאות שימוש](#-דוגמאות-שימוש)
-    - [יצירת טיול (Create Trip)](#יצירת-טיול-create-trip)
-    - [הוספת הוצאה (Add Expense)](#הוספת-הוצאה-add-expense)
-    - [סיכום טיול (Summary)](#סיכום-טיול-summary)
-  - [🤝 תרומה](#-תרומה)
-  - [📜 רישיון](#-רישיון)
+## Tech Stack
+- Runtime: Node.js (>=18)
+- Language: TypeScript
+- Web: Express
+- DB: MongoDB + Mongoose
+- Validation: Zod
+- Auth (current): basic user creation (extendable)
+- Hashing: bcrypt
+- Tooling (expected): ts-node / nodemon for dev, tsc for build
 
----
+## Directory Structure (src)
+```
+src/
+  index.ts                 # App bootstrap (Express, CORS, Mongo, middleware)
+  utils/
+    currency-converter.ts  # convertCurrencyToILS()
+    errors.ts              # Custom errors (e.g. DocumentNotFoundError)
+    zod.ts                 # TypedRequest helper
+  express/
+    users/
+      interface.ts
+      model.ts
+      manager.ts
+      controller.ts
+      router.ts
+    trips/
+      interface.ts
+      model.ts
+      validations.ts
+      manager.ts
+      controller.ts
+      router.ts
+    payments/
+      interface.ts
+      model.ts
+      manager.ts
+      controller.ts
+      router.ts
+  middleware/
+    loggerMiddleware.ts (assumed)
+config/ (if present)       # Centralized config loader (referenced in index)
+```
 
-## ✨ תכונות
-- ניהול טיולים וחברים
-- הוספת הוצאות לכל טיול
-- חישוב אוטומטי של איזון התשלומים
-- תמיכה בעברית ובאנגלית
-- ממשק מודרני עם MUI
+## Environment Variables
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| SERVICE_PORT | yes | 3000 | Port Express listens on |
+| USERS_MONGO_URI or MONGO_URI | yes | none | Mongo connection string used in config.users.mongo.uri |
+| CORS_ORIGINS | no | http://localhost:5173 | Comma separated allowed origins |
+| NODE_ENV | no | development | Environment flag |
+| BCRYPT_SALT_ROUNDS | no | 10 | Salt rounds for password hashing |
+| LOG_LEVEL | no | info | Minimal log level (info/debug/error) |
 
----
+Adjust naming to match your config module. If your code uses `config.users.mongo.uri` map it from USERS_MONGO_URI.
 
-## ⚙️ התקנה והרצה
+### Example .env
+```
+SERVICE_PORT=3000
+USERS_MONGO_URI=mongodb://localhost:27017/tripbsh
+CORS_ORIGINS=http://localhost:5173,https://calculatetrips.netlify.app
+BCRYPT_SALT_ROUNDS=10
+NODE_ENV=development
+LOG_LEVEL=info
+```
 
-```bash
-# התקנת צד שרת
-cd backend
+## Scripts (suggested)
+Add to package.json if not present:
+```
+"scripts": {
+  "dev": "nodemon --watch src --exec ts-node src/index.ts",
+  "build": "tsc -p tsconfig.json",
+  "start": "node dist/index.js",
+  "lint": "eslint . --ext .ts",
+  "typecheck": "tsc --noEmit"
+}
+```
+
+## Run (Dev)
+```
 npm install
 npm run dev
+```
+Open: http://localhost:3000 (adjust port).
 
-# התקנת צד לקוח
-cd ui
-npm install
-npm run dev
+## Build & Run (Prod)
+```
+npm run build
+npm run start
 ```
 
-### הרצה עם Docker Compose
-```bash
-docker compose up --build
-```
+## Core Domain Logic
 
----
+### Payment Creation
+- amountInILS = convertCurrencyToILS(amount, currency)
+- sharePerUser = amountInILS / beneficiaries.length
+- payer.balance += (amountInILS - sharePerUser)
+- each beneficiary.balance -= sharePerUser
+- Persist payment with stored amountInILS for future reversals.
 
-## 🌍 דיפלוי
-- **Frontend** – GitHub Pages
-- **Backend** – Railway.app / Render
+### Payment Deletion
+Reverse:
+- payer.balance -= (amountInILS - sharePerUser)
+- each beneficiary.balance += sharePerUser
 
----
+### Payment Update
+Recalculate ONLY if:
+- amount changed
+- currency changed
+- beneficiary list changed
+Process:
+1. Revert old distribution (using stored amountInILS).
+2. Recompute new amountInILS (if amount/currency changed).
+3. Apply new distribution.
 
-## 🛠 מבנה פרויקט
-```
-trip-bsh/
-│── backend/        # צד שרת - Node.js + Express + TypeScript + MongoDB
-│── ui/             # צד לקוח - React + TS + MUI
-│── docker-compose.yml
-│── README.md
-```
+Metadata-only changes (description, dates) skip balance logic.
 
----
+### Trip Summary
+Greedy settle between debtors (balance < 0) and creditors (balance > 0) producing minimal transaction list.
 
-## 📡 API Endpoints
+### Remove Participant
+Allowed only if participant.balance === 0; otherwise error.
 
-| Method | Endpoint                  | Description                  |
-|--------|---------------------------|------------------------------|
-| POST   | /api/trips                | יצירת טיול חדש              |
-| GET    | /api/trips/:id            | קבלת פרטי טיול               |
-| POST   | /api/trips/:id/expenses   | הוספת הוצאה לטיול            |
-| GET    | /api/trips/:id/summary    | סיכום חובות/יתרות            |
-| POST   | /api/users                | יצירת משתמש חדש              |
-| GET    | /api/users/:id            | פרטי משתמש                   |
+## Validation (Zod)
+- ObjectId regex
+- Trip creation: name, startDate < endDate
+- Request schemas per route (params/query/body)
+- Payment update: reject direct amountInILS modifications.
 
----
+## Error Handling (Recommended Mapping)
+| Error Text | HTTP |
+|------------|------|
+| Payment not found / User not found / Trip not found | 404 |
+| Unauthorized | 403 |
+| Corrupted payment data | 400 |
+| Validation failures | 400 |
+| Generic | 500 |
 
-## 📄 דוגמאות שימוש
+Implement middleware to translate thrown Error messages to status codes.
 
-### יצירת טיול (Create Trip)
-**Request**
-```bash
-curl -X POST http://localhost:3000/api/trips \
-  -H "Content-Type: application/json" \
-  -d '{"name":"טיול לאמסטרדם","participants":["u1","u2"]}'
-```
+## Currency Conversion
+Frankfurter endpoint:
+`https://api.frankfurter.app/latest?amount={amount}&from={FROM}&to=ILS`
+Return `rates.ILS`. If FROM already ILS variants → return amount.
 
-**Response**
-```json
-{
-  "id": "t1",
-  "name": "טיול לאמסטרדם",
-  "participants": ["u1", "u2"]
-}
-```
+## Security Considerations
+- Hash passwords (bcrypt) before save.
+- Do not log raw passwords.
+- Validate all ObjectIds.
+- Prevent modification of immutable fields (tripId, payerId, amountInILS).
 
----
+## Testing (Recommended)
+- Create payment → verify balances.
+- Delete payment → balances revert exactly.
+- Update payment amount only → balances adjust delta.
+- Update description only → balances unchanged.
+- Remove participant with non-zero balance → error.
+- Currency conversion fallback when ILS given.
 
-### הוספת הוצאה (Add Expense)
-**Request**
-```bash
-curl -X POST http://localhost:3000/api/trips/t1/expenses \
-  -H "Content-Type: application/json" \
-  -d '{"payer":"u1","amount":200,"description":"ארוחת ערב"}'
-```
+## Extensibility
+- Add JWT auth (middleware + protect routes).
+- Add rate limiting (express-rate-limit).
+- Add audit trail for payment changes.
+- Add pagination for payments listing.
 
-**Response**
-```json
-{
-  "id": "e1",
-  "payer": "u1",
-  "amount": 200,
-  "description": "ארוחת ערב"
-}
-```
+## License
+MIT (update if different).
 
----
-
-### סיכום טיול (Summary)
-**Request**
-```bash
-curl http://localhost:3000/api/trips/t1/summary
-```
-
-**Response**
-```json
-{
-  "balances": [
-    { "user": "u1", "balance": +100 },
-    { "user": "u2", "balance": -100 }
-  ]
-}
-```
-
----
-
-## 🤝 תרומה
-מוזמנים לפתוח **Pull Requests** או לדווח על בעיות ב־**Issues**.
-
----
-
-## 📜 רישיון
-MIT License © 2025 TripBSH
+## Support
+Open an issue with: endpoint, payload, response status, stack trace, Node
