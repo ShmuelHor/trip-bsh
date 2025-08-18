@@ -27,8 +27,8 @@ export const config = {
         },
     },
     authentication: {
-        secret_key: env.get('SECRET_KEY').default('tripbsh@secret_1234').asString(),
-        token_name: env.get('TOKEN_NAME').default('tripbsh').asString(),
+secret_key: env.get('SECRET_KEY').required().asString(),
+        token_name: env.get('TOKEN_NAME').required().asString(),
         baseRoute: env.get('AUTHENTICATION_BASE_ROUTE').default('/api/auth').asString(),
     },
 };

@@ -30,7 +30,6 @@ export class TripsManager {
             startDate: trip.startDate,
             endDate: trip.endDate,
         };
-        console.log('Creating trip with data:', newTrip);
 
         const createdTrip = await TripsModel.create(newTrip);
         return createdTrip;

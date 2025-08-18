@@ -10,6 +10,8 @@ export class ServiceError extends Error {
 
 export class DocumentNotFoundError extends ServiceError {
     constructor(id: string) {
-        super(404, `No system found with id ${id}`);
+        super(404, `No document found with id ${id}`);
     }
 }
+
+
